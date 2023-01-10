@@ -3,8 +3,8 @@ const crypto = require('node:crypto');
 const bodyParser = require('body-parser');
 
 const algorithm = 'aes-256-cbc';
-const INIT_VECTOR_KEY = 'P2B0rTWYuncCncBx';
-const ENCRYPTED_KEY = 'JxfmVQ8Ejn9ilVUL4cnDCEfDcTg0U3vB';
+const INIT_VECTOR_KEY = crypto.randomBytes(16);
+const ENCRYPTED_KEY = crypto.randomBytes(32);
 
 const app = express();
 
@@ -15,8 +15,8 @@ const port = 4202;
 app.post('/encrypt', (req, res) => {
   const cipher = crypto.createCipheriv(
     algorithm,
-    Buffer.from(ENCRYPTED_KEY, 'utf-8'),
-    Buffer.from(INIT_VECTOR_KEY, 'utf-8')
+    ENCRYPTED_KEY,
+    INIT_VECTOR_KEY
   );
 
   let encrypted = cipher.update(JSON.stringify(req.body), 'utf-8', 'hex');
@@ -33,8 +33,8 @@ app.post('/decrypt', (req, res) => {
 
   const decipher = crypto.createDecipheriv(
     algorithm,
-    Buffer.from(ENCRYPTED_KEY, 'utf-8'),
-    Buffer.from(INIT_VECTOR_KEY, 'utf-8')
+    ENCRYPTED_KEY,
+    INIT_VECTOR_KEY
   );
 
   let decrypted = decipher.update(toBeDecrypted, 'hex', 'utf-8');
